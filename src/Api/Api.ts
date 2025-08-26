@@ -56,16 +56,18 @@ export const getIdCharactersFromEpisodes = async (filter: Filter = {}) => {
 
     const data = await response.json();
 
-    data.results.forEach((episode: Episode) => {
-      episode.characters.forEach((characterUrl) => {
-        const id = characterUrl.split("/").pop();
-        if (id) {
-          charactersId.add(id);
-        }
+    if (data.results && Array.isArray(data.results)) {
+      data.results.forEach((episode: Episode) => {
+        episode.characters.forEach((characterUrl) => {
+          const id = characterUrl.split("/").pop();
+          if (id) {
+            charactersId.add(id);
+          }
+        });
       });
-    });
+    }
 
-    hasMorePages = data.info.next !== null;
+    hasMorePages = data.info && data.info.next !== null;
     page++;
   }
 
@@ -89,9 +91,12 @@ export const getCharactersApi = async (filter = {}) => {
     });
 
     const data = await response.json();
-    allCharacters.push(...data.results);
 
-    hasMorePages = data.info.next !== null;
+    if (data.results && Array.isArray(data.results)) {
+      allCharacters.push(...data.results);
+    }
+
+    hasMorePages = data.info && data.info.next !== null;
     page++;
   }
 
