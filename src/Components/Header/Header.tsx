@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import { type TFilter } from "./types";
+import { type Filter } from "../../Api/Api";
 
 interface HeaderProps {
-  filter: TFilter;
-  onFilterChange: (filter: TFilter) => void;
+  filter: Filter;
+  onFilterChange: (filter: Filter) => void;
 }
 export const Header = ({ filter, onFilterChange }: HeaderProps) => {
   const handleInputChange = useMemo(
-    () => (key: keyof TFilter, value: string) => {
+    () => (key: keyof Filter, value: string) => {
       onFilterChange({
         ...filter,
         [key]: value,
@@ -20,9 +20,9 @@ export const Header = ({ filter, onFilterChange }: HeaderProps) => {
     return value.replace(/[^a-zA-Z0-9\s\-']/g, "");
   };
   const handleValidInputChange = (key: "name" | "episode", value: string) => {
-      const filteredValue = validateInput(value);
-      handleInputChange(key, filteredValue);
-    };
+    const filteredValue = validateInput(value);
+    handleInputChange(key, filteredValue);
+  };
 
   const statuses = ["Alive", "Dead", "unknown"];
   const species = [
@@ -41,8 +41,8 @@ export const Header = ({ filter, onFilterChange }: HeaderProps) => {
   return (
     <div className="flex flex-col gap-4 my-2">
       <h1 className="text-3xl font-bold text-center">Вселенная Рик и Морти</h1>
-      <div className="grid grid-cols-2 grid-rows-3 w-1/3 mx-auto gap-2">
-        <div className="flex flex-col justify-center col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-auto sm:grid-rows-3 max-w-3xl mx-auto gap-2">
+        <div className="flex flex-col justify-center sm:col-span-2">
           <label htmlFor="name-input" className="text-gray-600 font-medium">
             Имя персонажа
           </label>
@@ -90,7 +90,7 @@ export const Header = ({ filter, onFilterChange }: HeaderProps) => {
             {}
           </select>
         </div>
-        <div className="flex flex-col justify-center col-span-2">
+        <div className="flex flex-col justify-center sm:col-span-2">
           <label htmlFor="name-input" className="text-gray-600 font-medium">
             Эпизод
           </label>
