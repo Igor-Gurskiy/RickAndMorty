@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-
+import { type Character } from "../../Api/Api";
 interface ICard {
-  character: TCharacter;
+  character: Character;
   visible: boolean;
   onClose: () => void;
 }
@@ -31,7 +31,7 @@ export const Card = ({ character, visible, onClose }: ICard) => {
         onClick={handleVisible}
       >
         <div
-          className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-md overflow-y-auto"
+          className="bg-white rounded-lg shadow-xl max-w-80 sm:max-w-md w-full max-h-md overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center p-2">
