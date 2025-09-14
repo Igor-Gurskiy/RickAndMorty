@@ -1,53 +1,65 @@
-import { Card } from "../Card/Card";
-import { useState } from "react";
-import { type Character } from "../../Api/Api";
-interface IMain {
-  characters: Character[];
-}
-export const Main = ({ characters }: IMain) => {
-  const [visible, setVisible] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
-    null
-  );
-  const cardOnClick = (character: Character) => {
-    setVisible(true);
-    setSelectedCharacter(character);
-  };
+import { memo, useCallback, useEffect } from 'react';
+import { Pagination } from '../Pagination/Pagination';
+import {
+	fetchCharacters,
+	selectAllCharacters,
+	selectCurrentCharacters,
+	selectCurrentPage,
+	selectLoadind,
+	selectShowOnlyLiked,
+	selectTotalPages,
+	setCurrentPage,
+} from '../services/slices/MainSlice';
+import { useDispatch, useSelector } from '../services/store';
+import { Preloader } from '../preloader/preloader';
+import { Characters } from '../Characters/Characters';
 
-  const handleCloseModal = () => {
-    setVisible(false);
-  };
+export const Main = memo(() => {
+	const dispatch = useDispatch();
+	const currentCharacters = useSelector(selectCurrentCharacters);
+	const currentPage = useSelector(selectCurrentPage);
+	const totalPages = useSelector(selectTotalPages);
+	const isLoading = useSelector(selectLoadind);
+	const allCharacters = useSelector(selectAllCharacters);
+	const showOnlyLiked = useSelector(selectShowOnlyLiked);
 
-  return (
-    <>
-      <div>
-        <h1 className="text-3xl font-bold text-center my-2">Найдено</h1>
-        <div className="flex flex-col gap-4 w-2/3 sm:w-1/2 mx-auto">
-          {characters &&
-            characters.map((character: Character, index: number) => (
-              <div
-                key={character.id}
-                className={`flex flex-col sm:flex-row justify-center items-center text-center p-3 gap-4 cursor-pointer ${
-                  index !== characters.length - 1
-                    ? "border-b border-gray-300"
-                    : ""
-                }`}
-                onClick={() => cardOnClick(character)}
-              >
-                <h2 className="text-lg font-bold">{character.name}</h2>
-                <p className="text-gray-600">Status: {character.status}</p>
-                <p className="text-gray-600">Species: {character.species}</p>
-              </div>
-            ))}
-        </div>
-        {selectedCharacter && (
-          <Card
-            character={selectedCharacter}
-            visible={visible}
-            onClose={handleCloseModal}
-          />
-        )}
-      </div>
-    </>
-  );
-};
+	useEffect(() => {
+		if (allCharacters.length === 0) {
+			dispatch(fetchCharacters())
+				.unwrap()
+				.catch((error) => {
+					console.error('Failed to fetch characters:', error);
+				});
+		}
+	}, [dispatch, allCharacters.length]);
+
+	const handlePageChange = useCallback(
+		(page: number) => {
+			dispatch(setCurrentPage(page));
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		},
+		[dispatch]
+	);
+
+	if (isLoading) {
+		return <Preloader />;
+	}
+
+	return (
+		<>
+			<Characters characters={currentCharacters} />
+			{currentCharacters && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={handlePageChange}
+				/>
+			)}
+			{showOnlyLiked && currentCharacters.length === 0 && (
+				<div className="text-center text-gray-500 py-8">
+					Нет персонажей с лайками
+				</div>
+			)}
+		</>
+	);
+});

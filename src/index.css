@@ -1,5 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-*, *::before, *::after {
-  box-sizing: border-box;
+:root {
+	scrollbar-gutter: stable;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }

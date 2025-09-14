@@ -17,3 +17,7 @@ npm install
 ```bash
 npm run dev
 ```
+
+## GitHub Pages
+
+https://igor-gurskiy.github.io/RickAndMorty/
